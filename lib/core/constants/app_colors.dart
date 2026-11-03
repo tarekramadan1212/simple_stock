@@ -8,4 +8,6 @@ class AppColors {
   static const Color surface = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF212529);
   static const Color textSecondary = Color(0xFF6C757D);
+  static const Color border = Color(0xFFDEE2E6);
+  static const Color error = Color(0xFFD32F2F);
 }

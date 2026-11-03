@@ -1,7 +1,7 @@
-import 'package:get_it/get_it.dart';
+import '../di/injection_container.dart' as di;
 
-final sl = GetIt.instance;
+final sl = di.sl;
 
 Future<void> initServiceLocator() async {
-  // Service locator initialization
+  await di.init();
 }

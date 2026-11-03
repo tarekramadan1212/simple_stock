@@ -1,8 +1,25 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'core/constants/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/di/injection_container.dart' as di;
+import 'core/theme/app_theme.dart';
+import 'features/auth_license/presentation/bloc/auth_bloc.dart';
 import 'features/auth_license/presentation/pages/license_login_page.dart';
+import 'features/inventory/presentation/bloc/inventory_cubit.dart';
+import 'features/invoicing/presentation/bloc/invoice_cubit.dart';
+import 'features/profile_reports/presentation/bloc/reports_cubit.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase initialization info: $e');
+  }
+
+  await di.init();
+
   runApp(const SimpleStockApp());
 }
 
@@ -11,20 +28,27 @@ class SimpleStockApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Simple Stock',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          primary: AppColors.primary,
-          secondary: AppColors.accent,
-          surface: AppColors.surface,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => di.sl<AuthBloc>(),
         ),
-        useMaterial3: true,
+        BlocProvider<InventoryCubit>(
+          create: (_) => di.sl<InventoryCubit>(),
+        ),
+        BlocProvider<InvoiceCubit>(
+          create: (_) => di.sl<InvoiceCubit>(),
+        ),
+        BlocProvider<ReportsCubit>(
+          create: (_) => di.sl<ReportsCubit>(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Simple Stock',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        home: const LicenseLoginPage(),
       ),
-      home: const LicenseLoginPage(),
     );
   }
 }
