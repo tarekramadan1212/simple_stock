@@ -4,19 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/theme/app_theme.dart';
 import 'features/auth_license/presentation/bloc/auth_bloc.dart';
-import 'features/auth_license/presentation/pages/license_login_page.dart';
+import 'features/auth_license/presentation/pages/license_key_page.dart';
 import 'features/inventory/presentation/bloc/inventory_cubit.dart';
 import 'features/invoicing/presentation/bloc/invoice_cubit.dart';
 import 'features/profile_reports/presentation/bloc/reports_cubit.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization info: $e');
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await di.init();
 
@@ -47,7 +46,7 @@ class SimpleStockApp extends StatelessWidget {
         title: 'Simple Stock',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const LicenseLoginPage(),
+        home: const LicenseKeyPage(),
       ),
     );
   }

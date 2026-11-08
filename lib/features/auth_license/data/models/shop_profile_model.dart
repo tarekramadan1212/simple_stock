@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/shop_profile.dart';
 
 class ShopProfileModel extends ShopProfile {
@@ -5,7 +6,6 @@ class ShopProfileModel extends ShopProfile {
     required super.tenantId,
     required super.licenseKey,
     required super.shopName,
-    required super.ownerName,
     required super.email,
     required super.phoneNumber,
     required super.address,
@@ -14,16 +14,24 @@ class ShopProfileModel extends ShopProfile {
   });
 
   factory ShopProfileModel.fromJson(Map<String, dynamic> json) {
+    DateTime parsedCreatedAt;
+    if (json['createdAt'] is Timestamp) {
+      parsedCreatedAt = (json['createdAt'] as Timestamp).toDate();
+    } else if (json['createdAt'] is String) {
+      parsedCreatedAt = DateTime.parse(json['createdAt'] as String);
+    } else {
+      parsedCreatedAt = DateTime.now();
+    }
+
     return ShopProfileModel(
-      tenantId: json['tenantId'] as String,
-      licenseKey: json['licenseKey'] as String,
-      shopName: json['shopName'] as String,
-      ownerName: json['ownerName'] as String,
-      email: json['email'] as String,
-      phoneNumber: json['phoneNumber'] as String,
-      address: json['address'] as String,
+      tenantId: json['tenantId'] as String? ?? '',
+      licenseKey: json['licenseKey'] as String? ?? '',
+      shopName: json['shopName'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      phoneNumber: json['phoneNumber'] as String? ?? '',
+      address: json['address'] as String? ?? '',
       taxNumber: json['taxNumber'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: parsedCreatedAt,
     );
   }
 
@@ -32,12 +40,11 @@ class ShopProfileModel extends ShopProfile {
       'tenantId': tenantId,
       'licenseKey': licenseKey,
       'shopName': shopName,
-      'ownerName': ownerName,
       'email': email,
       'phoneNumber': phoneNumber,
       'address': address,
       'taxNumber': taxNumber,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 }

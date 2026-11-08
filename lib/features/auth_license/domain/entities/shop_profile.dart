@@ -4,7 +4,6 @@ class ShopProfile extends Equatable {
   final String tenantId;
   final String licenseKey;
   final String shopName;
-  final String ownerName;
   final String email;
   final String phoneNumber;
   final String address;
@@ -15,7 +14,6 @@ class ShopProfile extends Equatable {
     required this.tenantId,
     required this.licenseKey,
     required this.shopName,
-    required this.ownerName,
     required this.email,
     required this.phoneNumber,
     required this.address,
@@ -28,7 +26,6 @@ class ShopProfile extends Equatable {
         tenantId,
         licenseKey,
         shopName,
-        ownerName,
         email,
         phoneNumber,
         address,

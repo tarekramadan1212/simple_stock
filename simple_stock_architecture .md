@@ -68,7 +68,6 @@ The application uses **Tenant Isolation at the Firestore Document Level**. Each 
 {
   "id": "LICENSE_KEY_STRING",
   "isUsed": false,
-   "maxUsers": 3,
   "assignedShopId": null,
   "createdAt": "Timestamp",
   "expiresAt": "Timestamp"
@@ -81,7 +80,6 @@ The application uses **Tenant Isolation at the Firestore Document Level**. Each 
   "tenantId": "string",
   "licenseKey": "string",
   "shopName": "string",
-  "ownerName": "string",
   "email": "string",
   "phoneNumber": "string",
   "address": "string",
@@ -187,15 +185,17 @@ lib/
     │   │   │   └── auth_repository.dart
     │   │   └── usecases/
     │   │       ├── validate_license.dart
-    │   │       └── save_shop_profile.dart
+    │   │       ├── save_shop_profile.dart
+    │   │       └── login_with_email_password.dart
     │   └── presentation/
     │       ├── bloc/
     │       │   ├── auth_bloc.dart
     │       │   ├── auth_event.dart
     │       │   └── auth_state.dart
     │       └── pages/
-    │           ├── license_login_page.dart
-    │           └── shop_setup_page.dart
+    │           ├── license_key_page.dart
+    │           ├── shop_setup_page.dart
+    │           └── login_page.dart
     │
     ├── inventory/
     │   ├── data/
@@ -214,7 +214,7 @@ lib/
     │       ├── bloc/
     │       │   └── invoice_cubit.dart
     │       └── pages/
-    │           └── create_invoice_page.dart
+    │           ├── create_invoice_page.dart
     │
     └── profile_reports/
         ├── data/
@@ -231,9 +231,16 @@ lib/
 ## 6. Functional Specification & User Flows
 
 ### 6.1 Authentication & Tenant Onboarding Flow
-1. **License Verification**: User submits license key -> Firestore checks `/licenses/{key}` where `isUsed == false` and  maxUsers != 3.
-2. **Tenant Creation**: User enters shop details (Name, Owner, Email, Phone, Address). System registers account, creates Firestore tenant tree (`/shops/{tenantId}/profile`), and updates license `isUsed = true` and increase maxUsers by one .
-3. **Session Persistence**: App securely caches `tenantId` to navigate straight to the dashboard on subsequent launches.
+1. **License Verification**: User submits license key -> App checks `/licenses/{key}` document in Firestore.
+2. **First-Time Setup (`isUsed == false`)**:
+   - Direct user to **Shop Setup Screen**.
+   - User enters Shop Name, Email, Phone Number, Address, Password, and Password Confirmation (Note: `ownerName` is omitted).
+   - Firebase Auth user account is created.
+   - System registers tenant document (`/shops/{tenantId}/profile`), links `assignedShopId` to the license, and marks license `isUsed = true`.
+3. **Existing Tenant / Device Addition (`isUsed == true`)**:
+   - If the license key entered is already marked as `isUsed == true`, the app identifies the associated `assignedShopId` and immediately redirects the user to the **Login Page**.
+   - User enters their registered Email and Password to authenticate and log in.
+4. **Session Persistence**: App securely caches active `tenantId` and session state locally so the shop doesn't need to sign in every time the app opens.
 
 ### 6.2 Stock Purchasing Flow
 1. User searches/selects existing item OR types a new item name.
